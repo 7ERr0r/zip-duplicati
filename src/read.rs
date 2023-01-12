@@ -507,6 +507,21 @@ impl<R: Read + io::Seek> ZipArchive<R> {
         self.shared.names_map.keys().map(|s| s.as_str())
     }
 
+    /// Returns true if file_name exists in this zip file
+    pub fn contains_file_name(&self, file_name: &str) -> bool {
+        self.shared.names_map.contains_key(file_name)
+    }
+
+    /// Returns Some(index) if file_name exists in this zip file
+    pub fn get_file_index(&self, file_name: &str) -> Option<usize> {
+        self.shared.names_map.get(file_name).copied()
+    }
+
+    /// Returns an ordered iterator over all the file and directory names in this archive.
+    pub fn file_names_ordered(&self) -> impl Iterator<Item = &str> {
+        self.shared.files.iter().map(|f| f.file_name.as_str())
+    }
+
     /// Search for a file entry by name, decrypt with given password
     ///
     /// # Warning
